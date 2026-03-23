@@ -3,11 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>อวท. วิทยาลัยการอาชีพบ้านโป่ง | ระบบจัดการเอกสาร (ครบทุกหมวด)</title>
+<title>อวท. วิทยาลัยการอาชีพบ้านโป่ง | ระบบจัดการเอกสาร (Firebase)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+.msg-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  flex-shrink: 0;
+}
+
+.msg-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: auto;
+}
+.msg-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background-color: #f0f0f0;
+}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Noto Sans Thai',sans-serif}
 :root{--primary:#b91c1c;--primary-light:#dc2626;--primary-dark:#7f1d1d;--primary-50:#fef2f2;--primary-100:#fee2e2;--primary-200:#fecaca;--primary-bg:linear-gradient(135deg,#fef2f2 0%,#ffffff 50%,#fef2f2 100%)}
 body{background:var(--primary-bg);min-height:100vh;color:#1f2937}
@@ -21,9 +49,9 @@ body{background:var(--primary-bg);min-height:100vh;color:#1f2937}
 .app{display:flex;flex-direction:column;min-height:100vh}
 header{background:linear-gradient(135deg,#510606, #6d1111, #410303);color:#fff;padding:12px 16px;position:relative;overflow:hidden}
 header::before{content:'';position:absolute;top:-50%;left:20%;width:300px;height:300px;background:rgba(255,255,255,.08);border-radius:50%;filter:blur(60px)}
-.header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:relative;z-index:1}
+.header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
 .header-left{display:flex;align-items:center;gap:12px}
-.logo{width:55px;height:55px;border-radius:50%;overflow:hidden;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.2);background:#fff;display:flex;align-items:center;justify-content:center}
+.logo{width:55px;height:55px;border-radius:50%;overflow:hidden;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .logo img{width:100%;height:100%;object-fit:cover}
 .header-title h1{font-size:1.5rem;font-weight:700;line-height:1.3}.header-title p{font-size:11px;opacity:.8}
 .header-badges{display:flex;gap:8px}
@@ -44,36 +72,7 @@ header::before{content:'';position:absolute;top:-50%;left:20%;width:300px;height
 .chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
 .msg{display:flex;gap:10px;max-width:88%}.msg.user{flex-direction:row-reverse;margin-left:auto}
 .msg-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}
-.msg-avatar.bot{
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background-color: #f0f0f0;
-  flex-shrink: 0;
-}
-
-.msg-avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* หรือใช้ contain */
-  object-position: center;
-  image-rendering: -webkit-optimize-contrast; /* ทำให้คมชัด */
-  image-rendering: crisp-edges; /* สำหรับ firefox */
-  image-rendering: pixelated; /* สำหรับรูป pixel art */
-  image-rendering: auto;
-}
-
-/* ถ้าต้องการให้รูปเต็มพื้นที่โดยไม่ตัด */
-.msg-avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* รูปไม่ตัด แต่มีขอบ */
-  background-color: #f0f0f0;
-}
+.msg-avatar.bot{background:linear-gradient(135deg,var(--primary),var(--primary-light))}.msg-avatar.usr{background:linear-gradient(135deg,#4b5563,#1f2937)}
 .msg-bubble{border-radius:16px;padding:12px 16px;font-size:13px;line-height:1.7;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .msg-bubble.bot{background:var(--primary-50);border:1px solid var(--primary-100);border-top-left-radius:4px}
 .msg-bubble.usr{background:#f3f4f6;border:1px solid #e5e7eb;border-top-right-radius:4px}
@@ -105,7 +104,7 @@ header::before{content:'';position:absolute;top:-50%;left:20%;width:300px;height
 .cat-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:14px;border:1px solid var(--primary-100);background:#fff;cursor:pointer;transition:all .2s;text-align:center}
 .cat-card:hover{border-color:var(--primary-200);background:var(--primary-50);box-shadow:0 2px 8px rgba(0,0,0,.05)}
 .cat-card.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 3px 12px rgba(185,28,28,.25)}
-.cat-card .c-icon{font-size:24px}.cat-card .c-name{font-size:11px;font-weight:600;line-height:1.3}.cat-card .c-count{font-size:9.5px;font-weight:600;opacity:.6}
+.cat-card .c-icon{font-size:24px}.cat-card .c-name{font-size:11px;font-weight:600;line-height:1.3}.cat-card .c-count{font-size:9.5px; font-weight: 600;  opacity:.6}
 .doc-list{background:#fff;border-radius:16px;border:1px solid var(--primary-100);overflow:hidden}
 .doc-list-header{padding:12px 16px;border-bottom:1px solid var(--primary-50);background:var(--primary-50);display:flex;align-items:center;justify-content:space-between}
 .doc-list-header h3{font-size:13px;font-weight:600;color:#374151;display:flex;align-items:center;gap:8px}
@@ -211,10 +210,12 @@ footer{background:linear-gradient(135deg,var(--primary-dark),var(--primary),var(
 </head>
 <body>
 <div id="app" class="app"></div>
+
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
 <script>
-// ==================== FIREBASE CONFIG ====================
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyC2OxD_YVN3uSY51mOyIVNmmzZu-9sf-XY",
   authDomain: "banpong-37fa1.firebaseapp.com",
@@ -225,76 +226,41 @@ const firebaseConfig = {
   appId: "1:423387126481:web:14ad793acc7c597aa6c3f0"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const documentsRef = database.ref('documents');
 
-// ==================== 5 หมวดหมู่ตามคู่มือฯ ====================
+// ==================== หมวดหมู่เอกสาร 5 หมวดตามคู่มือฯ ====================
 const categories = [
   {id:'regulation', name:'ระเบียบและแนวปฏิบัติ', icon:'📜', desc:'เอกสารระเบียบ สอศ. ว่าด้วย อวท. และแนวปฏิบัติประกอบระเบียบ'},
   {id:'form_awt', name:'แบบฟอร์ม อวท.', icon:'📝', desc:'แบบฟอร์ม อวท.01-39 สำหรับผู้ถูกประเมิน (สถานศึกษา/สมาชิก)'},
   {id:'evaluation', name:'คู่มือและแบบประเมิน', icon:'📋', desc:'คู่มือประเมินองค์การฯ และแบบประเมิน ปม.1-11 สำหรับกรรมการ'},
   {id:'activity_guide', name:'แนวทางการจัดกิจกรรมและพิธีการ', icon:'🎭', desc:'แนวปฏิบัติกิจกรรม 5 แผนคนดี/คนเก่ง และพิธีการต่างๆ'},
   {id:'appendix', name:'ภาคผนวก', icon:'📎', desc:'คณะผู้จัดทำ เพลงมาร์ชองค์การ เพลงชาวอวท.'},
-];// ==================== DEFAULT DOCUMENTS ครบ 81 รายการ ====================
+];
+
+// ==================== เอกสารเริ่มต้น ครบถ้วนตามคู่มือฯ ====================
 const defaultDocuments = [
   // ========== หมวด 1: ระเบียบและแนวปฏิบัติ ==========
   {name:'ระเบียบสำนักงานคณะกรรมการการอาชีวศึกษา ว่าด้วยองค์การนักวิชาชีพในอนาคตแห่งประเทศไทย พ.ศ. 2566', shortName:'ระเบียบ อวท. 2566', category:'regulation', subcategory:'ระเบียบ', description:'ระเบียบ สอศ. ว่าด้วย อวท. พ.ศ.2566 ฉบับสมบูรณ์ หมวด 1-9', keywords:['ระเบียบ','อวท','2566','สอศ','กฎหมาย']},
   {name:'แนวปฏิบัติประกอบระเบียบ อวท. พ.ศ. 2566 (เรื่องที่ 1-13)', shortName:'แนวปฏิบัติ อวท. 2566', category:'regulation', subcategory:'แนวปฏิบัติ', description:'แนวปฏิบัติเรื่องการจัดตั้งองค์การ ตราสัญลักษณ์ คณะกรรมการ ครูที่ปรึกษา การเลือกตั้ง พิธีการ การเงิน การประเมินฯ', keywords:['แนวปฏิบัติ','อวท','การจัดตั้ง','การเลือกตั้ง','พิธีการ']},
   {name:'คําขวัญ คติพจน์ คําปฏิญาณ และจรรยาบรรณแห่งวิชาชีพ อวท.', shortName:'คําขวัญอวท.', category:'regulation', subcategory:'เอกลักษณ์', description:'คําขวัญ คติพจน์ คําปฏิญาณ และจรรยาบรรณแห่งวิชาชีพขององค์การ', keywords:['คําขวัญ','คติพจน์','คําปฏิญาณ','จรรยาบรรณ']},
-  {name:'ตราสัญลักษณ์และธงองค์การ อวท.', shortName:'ตราสัญลักษณ์ อวท.', category:'regulation', subcategory:'เอกลักษณ์', description:'รูปแบบตราสัญลักษณ์องค์การ ความหมาย และธงองค์การแต่ละระดับ', keywords:['ตราสัญลักษณ์','ธง','องค์การ','อวท']},
   
-  // ========== หมวด 2: แบบฟอร์ม อวท. (อวท.01-39 ครบ) ==========
-  {name:'แบบแสดงความจำนงขอจัดตั้งองค์การ (อวท.01/1)', shortName:'อวท.01/1 จัดตั้งองค์การ', category:'form_awt', subcategory:'อวท.01-06', description:'แบบฟอร์มแสดงความจำนงของนักเรียนนักศึกษาเพื่อขอจัดตั้งองค์การ', keywords:['อวท.01/1','จัดตั้ง','องค์การ']},
-  {name:'แบบแสดงความจำนงขอจัดตั้งชมรมวิชาชีพ (อวท.01/2)', shortName:'อวท.01/2 จัดตั้งชมรม', category:'form_awt', subcategory:'อวท.01-06', description:'แบบฟอร์มแสดงความจำนงขอจัดตั้งชมรมวิชาชีพ', keywords:['อวท.01/2','จัดตั้ง','ชมรม']},
-  {name:'แบบแสดงความจำนงขอจัดตั้งชมรมอื่น (อวท.01/3)', shortName:'อวท.01/3 จัดตั้งชมรมอื่น', category:'form_awt', subcategory:'อวท.01-06', description:'แบบฟอร์มแสดงความจำนงขอจัดตั้งชมรมอื่น', keywords:['อวท.01/3','จัดตั้ง','ชมรมอื่น']},
-  {name:'คำสั่งแต่งตั้งคณะกรรมการบริหารองค์การ (อวท.02/1-4)', shortName:'อวท.02 กรรมการบริหาร', category:'form_awt', subcategory:'อวท.01-06', description:'คำสั่งแต่งตั้งคณะกรรมการบริหารองค์การทุกระดับ', keywords:['อวท.02','แต่งตั้ง','คณะกรรมการบริหาร']},
-  {name:'ประกาศจัดตั้งองค์การ (อวท.03)', shortName:'อวท.03 ประกาศจัดตั้ง', category:'form_awt', subcategory:'อวท.01-06', description:'ประกาศจัดตั้งองค์การนักวิชาชีพในอนาคตแห่งประเทศไทย', keywords:['อวท.03','ประกาศ','จัดตั้ง']},
-  {name:'ประกาศจัดตั้งชมรมวิชาชีพ (อวท.04)', shortName:'อวท.04 จัดตั้งชมรม', category:'form_awt', subcategory:'อวท.01-06', description:'ประกาศจัดตั้งชมรมวิชาชีพในสังกัดองค์การ', keywords:['อวท.04','ประกาศ','ชมรม']},
-  {name:'แบบขอแต่งตั้งครูที่ปรึกษาชมรม (อวท.05)', shortName:'อวท.05 ขอครูที่ปรึกษา', category:'form_awt', subcategory:'อวท.01-06', description:'แบบฟอร์มขอแต่งตั้งครูที่ปรึกษาชมรมวิชาชีพ', keywords:['อวท.05','ครูที่ปรึกษา','ชมรม']},
-  {name:'ประกาศแต่งตั้งครูที่ปรึกษาชมรม (อวท.05/1)', shortName:'อวท.05/1 ประกาศครูฯ', category:'form_awt', subcategory:'อวท.01-06', description:'ประกาศแต่งตั้งครูที่ปรึกษาชมรมวิชาชีพ', keywords:['อวท.05/1','ครูที่ปรึกษา']},
-  {name:'ใบสมัครสมาชิกชมรมวิชาชีพ (อวท.06)', shortName:'อวท.06 ใบสมัครชมรม', category:'form_awt', subcategory:'อวท.01-06', description:'แบบฟอร์มใบสมัครเข้าเป็นสมาชิกชมรมวิชาชีพ', keywords:['อวท.06','สมัคร','ชมรม']},
-  {name:'ใบสมัครสมาชิกชมรมอื่น (อวท.06/1)', shortName:'อวท.06/1 ใบสมัครชมรมอื่น', category:'form_awt', subcategory:'อวท.01-06', description:'แบบฟอร์มใบสมัครเข้าเป็นสมาชิกชมรมอื่น', keywords:['อวท.06/1','สมัคร','ชมรมอื่น']},
-  {name:'ประกาศรับสมัครเลือกตั้งประธานชมรม (อวท.07)', shortName:'อวท.07 รับสมัครประธาน', category:'form_awt', subcategory:'อวท.07-09', description:'ประกาศรับสมัครเลือกตั้งประธานชมรมวิชาชีพ', keywords:['อวท.07','รับสมัคร','ประธานชมรม']},
-  {name:'ใบสมัครรับเลือกตั้งประธานชมรม (อวท.07/1)', shortName:'อวท.07/1 ใบสมัครประธาน', category:'form_awt', subcategory:'อวท.07-09', description:'แบบฟอร์มใบสมัครรับเลือกตั้งประธานชมรม', keywords:['อวท.07/1','ใบสมัคร','ประธานชมรม']},
-  {name:'ประกาศรายชื่อผู้มีสิทธิ์รับเลือกตั้ง (อวท.07/2)', shortName:'อวท.07/2 รายชื่อผู้มีสิทธิ์', category:'form_awt', subcategory:'อวท.07-09', description:'ประกาศรายชื่อผู้มีสิทธิ์รับเลือกตั้งประธานชมรม', keywords:['อวท.07/2','ประกาศ','ผู้มีสิทธิ์']},
-  {name:'รายงานผลการเลือกตั้งประธานชมรม (อวท.08)', shortName:'อวท.08 ผลเลือกตั้ง', category:'form_awt', subcategory:'อวท.07-09', description:'รายงานผลการเลือกตั้งประธานชมรมวิชาชีพ', keywords:['อวท.08','รายงานผล','เลือกตั้ง']},
-  {name:'ประกาศแต่งตั้งคณะกรรมการชมรม (อวท.09)', shortName:'อวท.09 แต่งตั้งชมรม', category:'form_awt', subcategory:'อวท.07-09', description:'ประกาศแต่งตั้งคณะกรรมการดำเนินงานชมรม', keywords:['อวท.09','แต่งตั้ง','คณะกรรมการ']},
-  {name:'ใบสมัครสมาชิกองค์การ (อวท.10)', shortName:'อวท.10 ใบสมัครสมาชิก', category:'form_awt', subcategory:'อวท.10-14', description:'แบบฟอร์มใบสมัครเข้าเป็นสมาชิกองค์การ', keywords:['อวท.10','สมัคร','สมาชิก']},
-  {name:'ประกาศรับสมัครเลือกตั้งนายกองค์การ (อวท.11)', shortName:'อวท.11 รับสมัครนายก', category:'form_awt', subcategory:'อวท.10-14', description:'ประกาศรับสมัครเลือกตั้งนายกองค์การ', keywords:['อวท.11','รับสมัคร','นายก']},
-  {name:'ใบสมัครรับเลือกตั้งนายกองค์การ (อวท.11/1)', shortName:'อวท.11/1 ใบสมัครนายก', category:'form_awt', subcategory:'อวท.10-14', description:'แบบฟอร์มใบสมัครรับเลือกตั้งนายกองค์การ', keywords:['อวท.11/1','ใบสมัคร','นายก']},
-  {name:'ประกาศรายชื่อผู้มีสิทธิ์รับเลือกตั้งนายก (อวท.11/2)', shortName:'อวท.11/2 รายชื่อผู้มีสิทธิ์', category:'form_awt', subcategory:'อวท.10-14', description:'ประกาศรายชื่อผู้มีสิทธิ์รับเลือกตั้งนายกองค์การ', keywords:['อวท.11/2','ประกาศ','ผู้มีสิทธิ์']},
-  {name:'รายงานผลการเลือกตั้งนายกองค์การ (อวท.12)', shortName:'อวท.12 ผลเลือกตั้งนายก', category:'form_awt', subcategory:'อวท.10-14', description:'รายงานผลการเลือกตั้งนายกองค์การ', keywords:['อวท.12','รายงานผล','เลือกตั้ง']},
-  {name:'ประกาศแต่งตั้งคณะกรรมการดำเนินงานองค์การ (อวท.13)', shortName:'อวท.13 แต่งตั้งกรรมการ', category:'form_awt', subcategory:'อวท.10-14', description:'ประกาศแต่งตั้งคณะกรรมการดำเนินงานองค์การ', keywords:['อวท.13','แต่งตั้ง','คณะกรรมการ']},
-  {name:'รายงานการแต่งตั้งคณะกรรมการดำเนินงาน (อวท.14)', shortName:'อวท.14 รายงานแต่งตั้ง', category:'form_awt', subcategory:'อวท.10-14', description:'รายงานการแต่งตั้งคณะกรรมการดำเนินงานองค์การ', keywords:['อวท.14','รายงาน','แต่งตั้ง']},
-  {name:'แบบสรุปการประเมินผลกิจกรรม (อวท.15)', shortName:'อวท.15 สรุปประเมิน', category:'form_awt', subcategory:'อวท.15-19', description:'แบบสรุปการประเมินผลกิจกรรมองค์การวิชาชีพ', keywords:['อวท.15','ประเมิน','กิจกรรม']},
-  {name:'ประกาศแต่งตั้งคณะกรรมการประเมินผล (อวท.16)', shortName:'อวท.16 แต่งตั้งกรรมการประเมิน', category:'form_awt', subcategory:'อวท.15-19', description:'ประกาศแต่งตั้งคณะกรรมการประเมินผลกิจกรรม', keywords:['อวท.16','แต่งตั้ง','ประเมิน']},
-  {name:'ประกาศผลการประเมินกิจกรรม (อวท.17)', shortName:'อวท.17 ประกาศผล', category:'form_awt', subcategory:'อวท.15-19', description:'ประกาศผลการประเมินกิจกรรมองค์การวิชาชีพ', keywords:['อวท.17','ประกาศผล','ประเมิน']},
-  {name:'ประกาศกำหนดการซ่อมกิจกรรม (อวท.17/1)', shortName:'อวท.17/1 กำหนดซ่อม', category:'form_awt', subcategory:'อวท.15-19', description:'ประกาศกำหนดการซ่อมกิจกรรมองค์การวิชาชีพ', keywords:['อวท.17/1','ซ่อม','กิจกรรม']},
-  {name:'ใบคำร้องขอซ่อมกิจกรรม (อวท.18)', shortName:'อวท.18 คำร้องซ่อม', category:'form_awt', subcategory:'อวท.15-19', description:'แบบฟอร์มคำร้องขอลงทะเบียนซ่อมกิจกรรม', keywords:['อวท.18','ซ่อม','คำร้อง']},
-  {name:'ประกาศผลการซ่อมกิจกรรม (อวท.19)', shortName:'อวท.19 ผลซ่อม', category:'form_awt', subcategory:'อวท.15-19', description:'ประกาศผลการซ่อมกิจกรรมองค์การวิชาชีพ', keywords:['อวท.19','ประกาศผล','ซ่อม']},
-  {name:'แบบขออนุมัติใช้เงิน (อวท.20)', shortName:'อวท.20 ขออนุมัติ', category:'form_awt', subcategory:'อวท.20-26', description:'แบบขออนุมัติใช้เงินตามโครงการ', keywords:['อวท.20','อนุมัติ','เงิน']},
-  {name:'รายละเอียดการใช้จ่ายเงิน (อวท.21)', shortName:'อวท.21 รายละเอียดใช้จ่าย', category:'form_awt', subcategory:'อวท.20-26', description:'รายละเอียดการใช้จ่ายเงินโครงการ', keywords:['อวท.21','รายจ่าย','งบประมาณ']},
-  {name:'บัญชีรายรับ-รายจ่าย (อวท.22)', shortName:'อวท.22 บัญชี', category:'form_awt', subcategory:'อวท.20-26', description:'บัญชีรายรับ-รายจ่ายประจำเดือน', keywords:['อวท.22','บัญชี','รายรับ','รายจ่าย']},
-  {name:'สรุปรายงานฐานะทางการเงิน (อวท.23)', shortName:'อวท.23 สรุปการเงิน', category:'form_awt', subcategory:'อวท.20-26', description:'สรุปรายงานฐานะทางการเงินขององค์การ', keywords:['อวท.23','การเงิน','สรุป']},
-  {name:'บัญชีลงเวลาคณะกรรมการ (อวท.24)', shortName:'อวท.24 ลงเวลา', category:'form_awt', subcategory:'อวท.20-26', description:'บัญชีลงเวลาการปฏิบัติงานของคณะกรรมการ', keywords:['อวท.24','ลงเวลา','ปฏิบัติงาน']},
-  {name:'แบบบันทึกการปฏิบัติงาน (อวท.25)', shortName:'อวท.25 บันทึกปฏิบัติงาน', category:'form_awt', subcategory:'อวท.20-26', description:'แบบบันทึกการปฏิบัติงานของคณะกรรมการ', keywords:['อวท.25','บันทึก','ปฏิบัติงาน']},
-  {name:'รายงานผลการปฏิบัติงาน (อวท.25/1)', shortName:'อวท.25/1 รายงานปฏิบัติ', category:'form_awt', subcategory:'อวท.20-26', description:'รายงานผลการปฏิบัติงานของคณะกรรมการ', keywords:['อวท.25/1','รายงาน','ปฏิบัติงาน']},
-  {name:'ทะเบียนสมาชิก (อวท.26)', shortName:'อวท.26 ทะเบียนสมาชิก', category:'form_awt', subcategory:'อวท.20-26', description:'ทะเบียนรายชื่อสมาชิก อวท.', keywords:['อวท.26','ทะเบียน','สมาชิก']},
-  {name:'ประกาศเลื่อนระดับสมาชิก (อวท.26/1)', shortName:'อวท.26/1 เลื่อนระดับ', category:'form_awt', subcategory:'อวท.20-26', description:'ประกาศเลื่อนระดับสมาชิกสามัญ', keywords:['อวท.26/1','เลื่อนระดับ','สมาชิก']},
-  {name:'ใบสมัครชมรมวิชาชีพดีเด่น (อวท.27)', shortName:'อวท.27 สมัครชมรมดีเด่น', category:'form_awt', subcategory:'อวท.27-31', description:'ใบสมัครเข้ารับการประเมินชมรมวิชาชีพดีเด่น', keywords:['อวท.27','ชมรมดีเด่น','สมัคร']},
-  {name:'ประกาศแต่งตั้งกรรมการประเมินชมรมดีเด่น (อวท.28)', shortName:'อวท.28 แต่งตั้งประเมินชมรม', category:'form_awt', subcategory:'อวท.27-31', description:'ประกาศแต่งตั้งคณะกรรมการประเมินชมรมดีเด่น', keywords:['อวท.28','แต่งตั้ง','ประเมินชมรม']},
-  {name:'รายงานผลการประเมินชมรมดีเด่น (อวท.29)', shortName:'อวท.29 ผลประเมินชมรม', category:'form_awt', subcategory:'อวท.27-31', description:'รายงานผลการประเมินชมรมวิชาชีพดีเด่น', keywords:['อวท.29','รายงานผล','ชมรมดีเด่น']},
-  {name:'ประกาศผลการประเมินชมรมดีเด่น (อวท.30)', shortName:'อวท.30 ประกาศผลชมรม', category:'form_awt', subcategory:'อวท.27-31', description:'ประกาศผลการประเมินชมรมวิชาชีพดีเด่น', keywords:['อวท.30','ประกาศผล','ชมรมดีเด่น']},
-  {name:'ประกาศแต่งตั้งคณะกรรมการจัดกิจกรรม (อวท.31)', shortName:'อวท.31 แต่งตั้งจัดกิจกรรม', category:'form_awt', subcategory:'อวท.27-31', description:'ประกาศแต่งตั้งคณะกรรมการดำเนินงานจัดกิจกรรม', keywords:['อวท.31','แต่งตั้ง','จัดกิจกรรม']},
-  {name:'แบบพิจารณาแต่งตั้งครูที่ปรึกษาสมาชิกดีเด่น (อวท.32)', shortName:'อวท.32 ขอครูที่ปรึกษา', category:'form_awt', subcategory:'อวท.32-39', description:'แบบขอพิจารณาแต่งตั้งครูที่ปรึกษาสมาชิกดีเด่น', keywords:['อวท.32','ครูที่ปรึกษา','สมาชิกดีเด่น']},
-  {name:'ประกาศแต่งตั้งครูที่ปรึกษาสมาชิกดีเด่น (อวท.33)', shortName:'อวท.33 ประกาศครูฯ', category:'form_awt', subcategory:'อวท.32-39', description:'ประกาศแต่งตั้งครูที่ปรึกษาสมาชิกดีเด่น', keywords:['อวท.33','ครูที่ปรึกษา','ประกาศ']},
-  {name:'ใบสมัครสมาชิกดีเด่น (อวท.34)', shortName:'อวท.34 ใบสมัครดีเด่น', category:'form_awt', subcategory:'อวท.32-39', description:'ใบสมัครเข้ารับการประเมินสมาชิกดีเด่น', keywords:['อวท.34','สมาชิกดีเด่น','สมัคร']},
-  {name:'ประกาศแต่งตั้งกรรมการประเมินสมาชิกดีเด่น (อวท.35)', shortName:'อวท.35 แต่งตั้งประเมิน', category:'form_awt', subcategory:'อวท.32-39', description:'ประกาศแต่งตั้งคณะกรรมการประเมินสมาชิกดีเด่น', keywords:['อวท.35','แต่งตั้ง','ประเมิน']},
-  {name:'รายงานผลการประเมินสมาชิกดีเด่น (อวท.36)', shortName:'อวท.36 ผลประเมินดีเด่น', category:'form_awt', subcategory:'อวท.32-39', description:'รายงานผลการประเมินสมาชิกดีเด่น', keywords:['อวท.36','รายงานผล','สมาชิกดีเด่น']},
-  {name:'ประกาศผลสมาชิกดีเด่น ระดับสถานศึกษา (อวท.37)', shortName:'อวท.37 ประกาศผลดีเด่น', category:'form_awt', subcategory:'อวท.32-39', description:'ประกาศผลสมาชิกดีเด่นระดับสถานศึกษา', keywords:['อวท.37','ประกาศผล','สมาชิกดีเด่น']},
-  {name:'ประกาศผลสมาชิกดีเด่น ระดับสูง (อวท.38)', shortName:'อวท.38 ประกาศผลระดับสูง', category:'form_awt', subcategory:'อวท.32-39', description:'ประกาศผลสมาชิกดีเด่นระดับจังหวัด/ภาค/ชาติ', keywords:['อวท.38','ประกาศผล','สมาชิกดีเด่น']},
-  {name:'ประกาศผลองค์การมาตรฐานดีเด่น (อวท.39)', shortName:'อวท.39 ประกาศผลองค์การ', category:'form_awt', subcategory:'อวท.32-39', description:'ประกาศรายชื่อองค์การมาตรฐานดีเด่น', keywords:['อวท.39','ประกาศผล','องค์การมาตรฐาน']},
+  // ========== หมวด 2: แบบฟอร์ม อวท. ==========
+  {name:'แบบฟอร์มใบสมัครสมาชิกองค์การ (อวท.10)', shortName:'ใบสมัครสมาชิก อวท.', category:'form_awt', subcategory:'อวท.10', description:'แบบฟอร์มใบสมัครเข้าเป็นสมาชิกองค์การนักวิชาชีพในอนาคตแห่งประเทศไทย', keywords:['สมัคร','สมาชิก','อวท.10','ใบสมัคร']},
+  {name:'แบบฟอร์มใบสมัครสมาชิกชมรมวิชาชีพ (อวท.06)', shortName:'ใบสมัครสมาชิกชมรม', category:'form_awt', subcategory:'อวท.06', description:'แบบฟอร์มใบสมัครเข้าเป็นสมาชิกชมรมวิชาชีพ', keywords:['สมัคร','สมาชิก','ชมรม','อวท.06']},
+  {name:'แบบฟอร์มทะเบียนสมาชิก (อวท.26)', shortName:'ทะเบียนสมาชิก', category:'form_awt', subcategory:'อวท.26', description:'แบบฟอร์มทะเบียนรายชื่อสมาชิก อวท. ประจำปีการศึกษา', keywords:['ทะเบียน','สมาชิก','อวท.26']},
+  {name:'แบบฟอร์มรายงานการประชุม', shortName:'รายงานการประชุม', category:'form_awt', subcategory:'เอกสารการประชุม', description:'แบบฟอร์มรายงานการประชุมคณะกรรมการดำเนินงาน พร้อมมติที่ประชุม', keywords:['รายงาน','ประชุม','มติ','คณะกรรมการ']},
+  {name:'แบบฟอร์มระเบียบวาระการประชุม', shortName:'ระเบียบวาระการประชุม', category:'form_awt', subcategory:'เอกสารการประชุม', description:'แบบฟอร์มระเบียบวาระการประชุมคณะกรรมการดำเนินงาน', keywords:['ระเบียบวาระ','ประชุม','วาระ']},
+  {name:'แบบฟอร์มบัญชีรายรับ-รายจ่าย (อวท.22)', shortName:'บัญชีรายรับรายจ่าย', category:'form_awt', subcategory:'อวท.22', description:'แบบฟอร์มบัญชีรายรับ-รายจ่ายประจำเดือนขององค์การ', keywords:['บัญชี','รายรับ','รายจ่าย','การเงิน','อวท.22']},
+  {name:'แบบฟอร์มสรุปรายงานฐานะทางการเงิน (อวท.23)', shortName:'สรุปฐานะการเงิน', category:'form_awt', subcategory:'อวท.23', description:'แบบฟอร์มสรุปรายงานฐานะทางการเงินขององค์การ', keywords:['การเงิน','สรุป','อวท.23','ฐานะ']},
+  {name:'แบบฟอร์มคำร้องขอซ่อมกิจกรรม (อวท.18)', shortName:'คำร้องซ่อมกิจกรรม', category:'form_awt', subcategory:'อวท.18', description:'แบบฟอร์มคำร้องขอลงทะเบียนซ่อมกิจกรรมองค์การวิชาชีพ', keywords:['ซ่อม','คำร้อง','กิจกรรม','อวท.18']},
+  {name:'แบบฟอร์มรายงานผลโครงการ', shortName:'รายงานผลโครงการ', category:'form_awt', subcategory:'รายงานผล', description:'แบบฟอร์มรายงานสรุปผลการดำเนินงานโครงการ', keywords:['รายงานผล','โครงการ','สรุปผล']},
+  {name:'แบบฟอร์มขออนุมัติใช้เงิน (อวท.20)', shortName:'ขออนุมัติใช้เงิน', category:'form_awt', subcategory:'อวท.20', description:'แบบฟอร์มขออนุมัติใช้เงินตามโครงการ', keywords:['อนุมัติ','เงิน','งบประมาณ','อวท.20']},
+  {name:'แบบฟอร์มรายละเอียดการใช้จ่ายเงิน (อวท.21)', shortName:'รายละเอียดการใช้จ่าย', category:'form_awt', subcategory:'อวท.21', description:'แบบฟอร์มรายละเอียดการใช้จ่ายเงินโครงการ', keywords:['รายจ่าย','การใช้จ่าย','อวท.21']},
+  {name:'แบบฟอร์มใบสมัครสมาชิกดีเด่น (อวท.34)', shortName:'ใบสมัครสมาชิกดีเด่น', category:'form_awt', subcategory:'อวท.34', description:'แบบฟอร์มใบสมัครเพื่อเข้ารับการประเมินสมาชิกดีเด่นโครงการภายใต้การนิเทศ', keywords:['สมาชิกดีเด่น','สมัคร','นิเทศ','อวท.34']},
+  {name:'แบบฟอร์มบันทึกการนิเทศโครงการ', shortName:'บันทึกการนิเทศ', category:'form_awt', subcategory:'โครงการนิเทศ', description:'แบบฟอร์มสำหรับครูที่ปรึกษาบันทึกการนิเทศโครงการสมาชิกดีเด่น', keywords:['นิเทศ','บันทึก','ครูที่ปรึกษา']},
   
   // ========== หมวด 3: คู่มือและแบบประเมิน ==========
   {name:'คู่มือการประเมินองค์การนักวิชาชีพในอนาคตแห่งประเทศไทย พ.ศ. 2566', shortName:'คู่มือประเมินองค์การ', category:'evaluation', subcategory:'คู่มือ', description:'หลักการ วัตถุประสงค์ ข้อกำหนด เกณฑ์การให้คะแนน การประเมินองค์การ', keywords:['คู่มือ','ประเมิน','องค์การ','เกณฑ์']},
@@ -307,17 +273,16 @@ const defaultDocuments = [
   {name:'แบบสรุปผลการประเมินองค์การฯ (ปม.7)', shortName:'ปม.7 สรุปผล', category:'evaluation', subcategory:'ปม.7', description:'แบบสรุปผลการประเมินองค์การ', keywords:['ปม.7','สรุปผล','ประเมินองค์การ']},
   {name:'แบบสรุปข้อคิดเห็นและข้อเสนอแนะ (ปม.8)', shortName:'ปม.8 ข้อเสนอแนะ', category:'evaluation', subcategory:'ปม.8', description:'แบบสรุปข้อคิดเห็นและข้อเสนอแนะการประเมิน', keywords:['ปม.8','ข้อคิดเห็น','ข้อเสนอแนะ']},
   {name:'แบบประเมินสมาชิกดีเด่นโครงการภายใต้การนิเทศ (ปม.9)', shortName:'ปม.9 ประเมินสมาชิกดีเด่น', category:'evaluation', subcategory:'ปม.9', description:'แบบประเมินสมาชิกดีเด่น ด้านคุณธรรมจริยธรรม การดำเนินงาน และการนำเสนอ', keywords:['ปม.9','สมาชิกดีเด่น','ประเมิน','นิเทศ']},
-  {name:'แบบสรุปคะแนนสมาชิกดีเด่น (ปม.10-11)', shortName:'ปم.10-11 สรุปคะแนน', category:'evaluation', subcategory:'ปม.10', description:'แบบสรุปคะแนนการประเมินสมาชิกดีเด่น', keywords:['ปم.10','ปم.11','สรุปคะแนน','สมาชิกดีเด่น']},
+  {name:'แบบสรุปคะแนนสมาชิกดีเด่น (ปม.10-11)', shortName:'ปม.10-11 สรุปคะแนน', category:'evaluation', subcategory:'ปม.10', description:'แบบสรุปคะแนนการประเมินสมาชิกดีเด่น', keywords:['ปม.10','ปม.11','สรุปคะแนน','สมาชิกดีเด่น']},
   
   // ========== หมวด 4: แนวทางการจัดกิจกรรมและพิธีการ ==========
   {name:'แนวทางการจัดกิจกรรมเป้าหมายคนดี 5 แผน', shortName:'กิจกรรมคนดี 5 แผน', category:'activity_guide', subcategory:'กิจกรรม', description:'แผนเสริมสร้างจรรยาบรรณฯ, บุคลิกภาพ, คุณธรรม, ศาสนาฯ, อนุรักษ์ธรรมชาติ', keywords:['คนดี','กิจกรรม','5 แผน','จรรยาบรรณ','บุคลิกภาพ','คุณธรรม','ศาสนา','อนุรักษ์']},
   {name:'แนวทางการจัดกิจกรรมเป้าหมายคนเก่ง 5 แผน', shortName:'กิจกรรมคนเก่ง 5 แผน', category:'activity_guide', subcategory:'กิจกรรม', description:'แผนพัฒนาทักษะฯ, ส่งเสริมความคิดสร้างสรรค์, ประยุกต์สู่อาชีพ, ทักษะชีวิต, ความเป็นสากล', keywords:['คนเก่ง','กิจกรรม','5 แผน','ทักษะ','สร้างสรรค์','อาชีพ','ทักษะชีวิต','สากล']},
-  {name:'พิธีเลื่อนระดับสมาชิกสามัญ', shortName:'พิธีเลื่อนระดับ', category:'activity_guide', subcategory:'พิธีการ', description:'ขั้นตอนและรูปแบบพิธีเลื่อนระดับสมาชิกสามัญ ระดับจังหวัด ภาค ชาติ พร้อมเข็มวิทยฐานะ', keywords:['พิธี','เลื่อนระดับ','สมาชิก','เข็มวิทยฐานะ']},
-  {name:'พิธีการจัดกิจกรรมหน้าเสาธง', shortName:'พิธีหน้าเสาธง', category:'activity_guide', subcategory:'พิธีการ', description:'ขั้นตอนพิธีการจัดกิจกรรมหน้าเสาธง', keywords:['พิธี','หน้าเสาธง','ธงชาติ']},
-  {name:'พิธีเปิด-ปิดค่ายผู้นำ', shortName:'พิธีเปิดปิดค่าย', category:'activity_guide', subcategory:'พิธีการ', description:'พิธีเปิดและปิดค่ายผู้นำ/ค่ายพัก', keywords:['พิธี','ค่ายผู้นำ','เปิด','ปิด']},
-  {name:'พิธีเปิด-ปิดการประชุมวิชาการสมัยสามัญ', shortName:'พิธีเปิดปิดประชุม', category:'activity_guide', subcategory:'พิธีการ', description:'พิธีเปิดและปิดการประชุมวิชาการสมัยสามัญประจำปี', keywords:['พิธี','เปิดประชุม','ปิดประชุม','วิชาการ']},
-  {name:'พิธีจุดประกายแสงแห่งปัญญา', shortName:'พิธีจุดประกายแสง', category:'activity_guide', subcategory:'พิธีการ', description:'รายละเอียดและขั้นตอนพิธีจุดประกายแสงแห่งปัญญา พร้อมบทกลอนและคำคม', keywords:['พิธี','จุดประกาย','แสงแห่งปัญญา','เทียน']},
-  {name:'พิธีเชิดชูเกียรติสมาชิกดีเด่น (Star Vec)', shortName:'พิธี Star Vec', category:'activity_guide', subcategory:'พิธีการ', description:'พิธีการมอบเกียรติบัตรและโล่แก่สมาชิกดีเด่นโครงการภายใต้การนิเทศ', keywords:['Star Vec','สมาชิกดีเด่น','พิธี','เชิดชูเกียรติ']},
+  {name:'พิธีเลื่อนระดับสมาชิกสามัญ', shortName:'พิธีเลื่อนระดับ', category:'activity_guide', subcategory:'พิธีการ', description:'ขั้นตอนและรูปแบบพิธีเลื่อนระดับสมาชิกสามัญ ระดับจังหวัด ภาค ชาติ พร้อมเข็มวิทยฐานะ', keywords:['พิธี','เลื่อนระดับ','สมาชิก','เข็มวิทยฐานะ','ทองแดง','เงิน','ทอง']},
+  {name:'พิธีเปิด-ปิดการประชุมวิชาการสมัยสามัญ', shortName:'พิธีเปิดปิดประชุมวิชาการ', category:'activity_guide', subcategory:'พิธีการ', description:'พิธีเปิดและปิดการประชุมวิชาการสมัยสามัญประจำปีของสมาชิกองค์การ', keywords:['พิธี','เปิดประชุม','ปิดประชุม','วิชาการ','สมัยสามัญ']},
+  {name:'พิธีจุดประกายแสงแห่งปัญญา', shortName:'พิธีจุดประกายแสง', category:'activity_guide', subcategory:'พิธีการ', description:'รายละเอียดและขั้นตอนพิธีจุดประกายแสงแห่งปัญญา พร้อมบทกลอนและคำคม', keywords:['พิธี','จุดประกาย','แสงแห่งปัญญา','เทียน','ปัญญา']},
+  {name:'พิธีเชิดชูเกียรติสมาชิกดีเด่น (Star Vec)', shortName:'พิธี Star Vec', category:'activity_guide', subcategory:'พิธีการ', description:'พิธีการมอบเกียรติบัตรและโล่แก่สมาชิกดีเด่นโครงการภายใต้การนิเทศ', keywords:['Star Vec','สมาชิกดีเด่น','พิธี','เชิดชูเกียรติ','นิเทศ']},
+  {name:'พิธีต้อนรับตามธรรมเนียมท้องถิ่น', shortName:'พิธีต้อนรับท้องถิ่น', category:'activity_guide', subcategory:'พิธีการ', description:'พิธีต้อนรับตามธรรมเนียมท้องถิ่นในงานประชุมวิชาการ', keywords:['ต้อนรับ','ธรรมเนียม','ท้องถิ่น','วัฒนธรรม']},
   {name:'การแข่งขันทักษะวิชาชีพและทักษะพื้นฐาน', shortName:'การแข่งขันทักษะ', category:'activity_guide', subcategory:'การแข่งขัน', description:'แนวทางการจัดการแข่งขันทักษะวิชาชีพและทักษะพื้นฐาน ระดับสถานศึกษา จังหวัด ภาค ชาติ', keywords:['แข่งขัน','ทักษะ','วิชาชีพ','ทักษะพื้นฐาน','เกณฑ์']},
   {name:'การประเมินผลกิจกรรมองค์การวิชาชีพ', shortName:'การประเมินกิจกรรม', category:'activity_guide', subcategory:'การประเมิน', description:'แนวทางการประเมินผลการเข้าร่วมกิจกรรมองค์การวิชาชีพและกิจกรรมซ่อม', keywords:['ประเมิน','กิจกรรม','หน้าเสาธง','ชมรม','ซ่อม']},
   
@@ -327,12 +292,152 @@ const defaultDocuments = [
   {name:'เพลงชาว อวท.', shortName:'เพลงชาว อวท.', category:'appendix', subcategory:'เพลง', description:'เนื้อเพลงชาวองค์การนักวิชาชีพในอนาคตแห่งประเทศไทย', keywords:['เพลง','ชาวอวท','อวท','องค์การ']},
 ];
 
-let documents = [];// ==================== STATE & FUNCTIONS ====================
+let documents = [];
+
+// ==================== FIREBASE FUNCTIONS ====================
+function loadFromFirebase() {
+  documentsRef.on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data && Object.keys(data).length > 0) {
+      documents = Object.keys(data).map(key => {
+        return { ...data[key], id: key };
+      });
+      console.log('✅ โหลดข้อมูลจาก Firebase:', documents.length, 'รายการ');
+    } else {
+      console.log('📦 ไม่มีข้อมูลใน Firebase, กำลังเพิ่มข้อมูลเริ่มต้น...');
+      documents = [];
+      defaultDocuments.forEach(doc => {
+        documentsRef.push(doc);
+      });
+    }
+    render();
+  }, (error) => {
+    console.error('❌ โหลดข้อมูลไม่สำเร็จ:', error);
+    showToast('ไม่สามารถเชื่อมต่อ Firebase ได้: ' + error.message, 'error');
+  });
+}
+
+function addDoc(data) {
+  documentsRef.push(data)
+    .then(() => showToast('✅ เพิ่มเอกสารสำเร็จ', 'success'))
+    .catch((error) => {
+      showToast('❌ เพิ่มเอกสารไม่สำเร็จ: ' + error.message, 'error');
+      console.error(error);
+    });
+}
+
+function removeDoc(id) {
+  documentsRef.child(id).remove()
+    .then(() => showToast('🗑️ ลบเอกสารสำเร็จ', 'info'))
+    .catch((error) => {
+      showToast('❌ ลบเอกสารไม่สำเร็จ: ' + error.message, 'error');
+      console.error(error);
+    });
+}
+
+function updateDoc(id, data) {
+  documentsRef.child(id).set(data)
+    .then(() => showToast('✏️ แก้ไขเอกสารสำเร็จ', 'success'))
+    .catch((error) => {
+      showToast('❌ แก้ไขเอกสารไม่สำเร็จ: ' + error.message, 'error');
+      console.error(error);
+    });
+}
+
+// ==================== UTILITY FUNCTIONS ====================
+function getDocsByCat(catId) {
+  return documents.filter(d => d.category === catId);
+}
+
+function searchDocs(query) {
+  if (!query.trim()) return [];
+  const lower = query.toLowerCase();
+  const words = lower.split(/\s+/).filter(w => w.length > 1);
+  return documents.map(doc => {
+    let score = 0;
+    const text = (doc.name + ' ' + doc.description + ' ' + (doc.keywords||[]).join(' ') + ' ' + doc.category + ' ' + doc.subcategory + ' ' + (doc.formNumber || '')).toLowerCase();
+    if (text.includes(lower)) score += 10;
+    for (const w of words) {
+      if (text.includes(w)) score += 3;
+      if ((doc.keywords||[]).some(k => k.toLowerCase().includes(w))) score += 2;
+      if (doc.name.toLowerCase().includes(w)) score += 2;
+    }
+    return { doc, score };
+  }).filter(x => x.score > 0).sort((a,b) => b.score - a.score).map(x => x.doc);
+}
+
+function getCatInfo(catId) {
+  return categories.find(c => c.id === catId) || { icon: '📄', name: 'อื่นๆ' };
+}
+
+// ==================== DOWNLOAD ====================
+function downloadDoc(doc) {
+  if (doc.fileData && doc.fileName) {
+    try {
+      const byteString = atob(doc.fileData);
+      const ab = new ArrayBuffer(byteString.length);
+      const ia = new Uint8Array(ab);
+      for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+      }
+      const blob = new Blob([ab], { type: doc.fileType || 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = doc.fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      return;
+    } catch(e) {
+      showToast('เกิดข้อผิดพลาดในการดาวน์โหลด', 'error');
+      return;
+    }
+  }
+  const content = 'องค์การนักวิชาชีพในอนาคตแห่งประเทศไทย\nวิทยาลัยการอาชีพบ้านโป่ง\n' +
+    '─'.repeat(30) + '\n\n' +
+    doc.name + '\n' +
+    (doc.formNumber ? 'แบบ ' + doc.formNumber + '\n' : '') +
+    '\nหมวดหมู่: ' + doc.subcategory +
+    '\nรายละเอียด: ' + doc.description +
+    '\n\n' + '─'.repeat(30) +
+    '\nเอกสารนี้จากระบบจัดการเอกสาร อวท.\nวิทยาลัยการอาชีพบ้านโป่ง จ.ราชบุรี';
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = doc.shortName + '.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ==================== FILE HANDLER ====================
+window.handleFileSelect = function(input) {
+  const area = document.getElementById('uploadArea');
+  const txt = document.getElementById('uploadText');
+  if (!area || !txt) return;
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const sizeKB = (file.size / 1024).toFixed(1);
+    const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+    area.classList.add('attached');
+    txt.innerHTML =
+      '<div class="up-icon" style="color:#16a34a;opacity:1;font-size:28px">✅</div>' +
+      '<p style="color:#16a34a;font-weight:600">แนบไฟล์เรียบร้อยแล้ว!</p>' +
+      '<small style="color:#374151">' + file.name + '</small>' +
+      '<small style="color:#9ca3af">ขนาด: ' + (file.size > 1024*1024 ? sizeMB + ' MB' : sizeKB + ' KB') + '</small>';
+  }
+};
+
+// ==================== STATE & RENDER ====================
 let state = {
   tab: 'chat',
   messages: [{
     id: 'welcome', role: 'bot',
-    text: 'สวัสดีค่ะ! 🙏 ยินดีต้อนรับสู่ระบบจัดการเอกสาร **อวท. วิทยาลัยการอาชีพบ้านโป่ง**\n\n**ดิฉันช่วยคุณได้ในเรื่อง:**\n📜 ระเบียบและแนวปฏิบัติ (4 รายการ)\n📝 แบบฟอร์ม อวท. (อวท.01-39 ครบ 53 รายการ)\n📋 คู่มือและแบบประเมิน (ปม.1-11 ครบ 11 รายการ)\n🎭 แนวทางจัดกิจกรรมและพิธีการ (10 รายการ)\n📎 ภาคผนวก (3 รายการ)\n\n**ลองถามดิฉันได้เลย เช่น:**\n• "ระเบียบ อวท"\n• "อวท.10"\n• "ปม.1"\n• "พิธีจุดประกายแสง"\n• "กิจกรรมคนดี 5 แผน"\n\nหรือกดปุ่มตัวอย่างด้านล่างได้เลยค่ะ! 👇',
+    text: 'สวัสดีค่ะ! 🙏 ยินดีต้อนรับสู่ระบบจัดการเอกสาร **อวท. วิทยาลัยการอาชีพบ้านโป่ง**\n\n**ดิฉันช่วยคุณได้ในเรื่อง:**\n📜 ระเบียบและแนวปฏิบัติ\n📝 แบบฟอร์ม อวท.\n📋 คู่มือและแบบประเมิน\n🎭 แนวทางการจัดกิจกรรมและพิธีการ\n📎 ภาคผนวก\n\n**ลองถามดิฉันได้เลย เช่น:**\n• "ระเบียบ อวท"\n• "แบบฟอร์มใบสมัครสมาชิก"\n• "ปม.1"\n• "พิธีจุดประกายแสงแห่งปัญญา"\n\nหรือกดปุ่มตัวอย่างด้านล่างได้เลยค่ะ! 👇',
     docs: [], time: new Date()
   }],
   typing: false,
@@ -356,101 +461,56 @@ function showToast(msg, type) {
   render();
 }
 
-function formatTime(d) { return d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }); }
-function formatText(text) { return text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>'); }
-
-function getDocsByCat(catId) { return documents.filter(d => d.category === catId); }
-function getCatInfo(catId) { return categories.find(c => c.id === catId) || { icon: '📄', name: 'อื่นๆ' }; }
-
-function searchDocs(query) {
-  if (!query.trim()) return [];
-  const lower = query.toLowerCase();
-  return documents.filter(doc => {
-    const text = (doc.name + ' ' + doc.description + ' ' + (doc.keywords||[]).join(' ') + ' ' + doc.subcategory + ' ' + (doc.formNumber || '')).toLowerCase();
-    return text.includes(lower);
-  });
+function formatTime(d) {
+  return d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
 }
 
-function downloadDoc(doc) {
-  if (doc.fileData && doc.fileName) {
-    try {
-      const byteString = atob(doc.fileData);
-      const ab = new ArrayBuffer(byteString.length);
-      const ia = new Uint8Array(ab);
-      for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
-      const blob = new Blob([ab], { type: doc.fileType || 'application/octet-stream' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = doc.fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      return;
-    } catch(e) { showToast('ดาวน์โหลดผิดพลาด', 'error'); }
-  }
-  const content = 'องค์การนักวิชาชีพในอนาคตแห่งประเทศไทย\nวิทยาลัยการอาชีพบ้านโป่ง\n' + '─'.repeat(30) + '\n\n' + doc.name + '\n' + (doc.formNumber ? 'แบบ ' + doc.formNumber + '\n' : '') + '\nหมวดหมู่: ' + doc.subcategory + '\nรายละเอียด: ' + doc.description + '\n\n' + '─'.repeat(30) + '\nเอกสารจากระบบ อวท.';
-  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = doc.shortName + '.txt';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+function formatText(text) {
+  return text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
 }
 
-// ==================== FIREBASE FUNCTIONS ====================
-function loadFromFirebase() {
-  documentsRef.on('value', (snapshot) => {
-    const data = snapshot.val();
-    if (data && Object.keys(data).length > 0) {
-      documents = Object.keys(data).map(key => ({ ...data[key], id: key }));
-      console.log('✅ โหลด:', documents.length, 'รายการ');
-    } else {
-      console.log('📦 เพิ่มข้อมูลเริ่มต้น...');
-      documents = [];
-      defaultDocuments.forEach(doc => documentsRef.push(doc));
-    }
-    render();
-  }, (error) => { showToast('เชื่อมต่อ Firebase ไม่ได้', 'error'); });
-}
-
-function addDoc(data) { documentsRef.push(data).then(() => showToast('✅ เพิ่มสำเร็จ', 'success')); }
-function removeDoc(id) { documentsRef.child(id).remove().then(() => showToast('🗑️ ลบสำเร็จ', 'info')); }
-function updateDoc(id, data) { documentsRef.child(id).set(data).then(() => showToast('✏️ แก้ไขสำเร็จ', 'success')); }
-
-// ==================== AI RESPONSE ====================
 function aiResponse(msg) {
   const lower = msg.toLowerCase();
-  if (/^(สวัสดี|หวัดดี|hello|hi)/.test(lower)) {
-    return { text: 'สวัสดีค่ะ 😊 ดิฉันผู้ช่วยค้นหาเอกสาร อวท.\n\nพิมพ์คำค้น เช่น "อวท.10", "ปม.1", "ระเบียบ อวท"', docs: [] };
+  
+  // คำทักทาย
+  if (/^(สวัสดี|หวัดดี|ดี|hello|hi|hey)/.test(lower)) {
+    return { text: 'สวัสดีค่ะ 😊 ดิฉันเป็นผู้ช่วย AI ของระบบเอกสาร อวท. วิทยาลัยการอาชีพบ้านโป่ง\n\nดิฉันช่วยคุณได้ในเรื่อง:\n• 📜 ระเบียบและแนวปฏิบัติ\n• 📝 แบบฟอร์ม อวท.\n• 📋 คู่มือและแบบประเมิน\n• 🎭 แนวทางการจัดกิจกรรมและพิธีการ\n• 📎 ภาคผนวก\n\nลองถามดิฉันได้เลยค่ะ!', docs: [] };
   }
-  if (/ช่วย|วิธีใช้|help/.test(lower)) {
-    return { text: 'วิธีใช้: พิมพ์ชื่อเอกสารที่ต้องการ เช่น "ใบสมัครสมาชิก", "อวท.10", "ปม.1"', docs: [] };
+  
+  // ช่วยเหลือ
+  if (/ช่วย|ทำอะไรได้|help|วิธีใช้/.test(lower)) {
+    return { text: 'ดิฉันช่วยค้นหาเอกสารและแบบฟอร์มของ อวท. ได้ค่ะ! 📚\n\n**วิธีใช้งาน:**\n1. พิมพ์ชื่อแบบฟอร์ม เช่น "ใบสมัครสมาชิก"\n2. พิมพ์ประเภท เช่น "แบบฟอร์ม อวท"\n3. พิมพ์คำเกี่ยวข้อง เช่น "ปม.1" หรือ "พิธีการ"\n\n**หมวดหมู่:**\n📜 ระเบียบและแนวปฏิบัติ\n📝 แบบฟอร์ม อวท.\n📋 คู่มือและแบบประเมิน\n🎭 แนวทางการจัดกิจกรรมและพิธีการ\n📎 ภาคผนวก', docs: [] };
   }
-  if (/ทั้งหมด|รายการ/.test(lower)) {
-    return { text: `มีเอกสารทั้งหมด ${documents.length} รายการ`, docs: documents.slice(0, 6) };
+  
+  // ดูทั้งหมด
+  if (/ทั้งหมด|รายการ|ดูทั้งหมด|all/.test(lower)) {
+    return { text: 'มีเอกสารทั้งหมด ' + documents.length + ' รายการค่ะ 📑\nด้านล่างนี้คือตัวอย่างบางส่วน:', docs: documents.slice(0, 6) };
   }
+  
+  // จับคู่หมวดหมู่ตามคำค้น (ปรับให้ตรงกับ 5 หมวดหมู่)
   const catMap = [
-    { re: /ระเบียบ|แนวปฏิบัติ|กฎ|คำขวัญ|ตราสัญลักษณ์/, cat: 'regulation', label: '📜 ระเบียบและแนวปฏิบัติ' },
-    { re: /อวท\.\d+|แบบฟอร์ม|ใบสมัคร|ทะเบียน|บัญชี|รายงาน|ซ่อม|ขออนุมัติ|นิเทศ|ดีเด่น/, cat: 'form_awt', label: '📝 แบบฟอร์ม อวท.' },
-    { re: /ปม\.|คู่มือประเมิน|แบบประเมิน|ประเมินองค์การ|ประเมินสมาชิก/, cat: 'evaluation', label: '📋 คู่มือและแบบประเมิน' },
-    { re: /กิจกรรม|คนดี|คนเก่ง|5 แผน|พิธี|จุดประกายแสง|Star Vec|เลื่อนระดับ|หน้าเสาธง|แข่งขัน/, cat: 'activity_guide', label: '🎭 แนวทางจัดกิจกรรมและพิธีการ' },
+    { re: /ระเบียบ|แนวปฏิบัติ|กฎ|หมวด|คําขวัญ|คติพจน์|ปฏิญาณ|จรรยาบรรณ/, cat: 'regulation', label: '📜 ระเบียบและแนวปฏิบัติ' },
+    { re: /อวท\.\d+|แบบฟอร์ม อวท|ใบสมัคร|ทะเบียน|บัญชี|รายงานการประชุม|ระเบียบวาระ|ซ่อมกิจกรรม|ขออนุมัติ|นิเทศ/, cat: 'form_awt', label: '📝 แบบฟอร์ม อวท.' },
+    { re: /ปม\.|คู่มือประเมิน|แบบประเมิน|ประเมินองค์การ|ประเมินสมาชิกดีเด่น|ปม\.\d/, cat: 'evaluation', label: '📋 คู่มือและแบบประเมิน' },
+    { re: /กิจกรรม|คนดี|คนเก่ง|5 แผน|พิธี|พิธีการ|จุดประกายแสง|Star Vec|เลื่อนระดับ|เปิดประชุม|ปิดประชุม|แข่งขันทักษะ|การประเมินผลกิจกรรม/, cat: 'activity_guide', label: '🎭 แนวทางการจัดกิจกรรมและพิธีการ' },
     { re: /ภาคผนวก|คณะผู้จัดทำ|เพลง|มาร์ช|ชาวอวท/, cat: 'appendix', label: '📎 ภาคผนวก' },
   ];
+  
   for (const cm of catMap) {
     if (cm.re.test(lower)) {
       let docs = searchDocs(msg);
       if (docs.length === 0) docs = getDocsByCat(cm.cat);
-      return { text: cm.label + ' — พบ ' + docs.length + ' รายการ', docs: docs.slice(0, 8) };
+      return { text: cm.label + ' — พบ ' + docs.length + ' รายการค่ะ\nเลือกดาวน์โหลดที่ต้องการได้เลย:', docs: docs.slice(0, 8) };
     }
   }
+  
+  // ค้นหาทั่วไป
   const docs = searchDocs(msg);
-  if (docs.length > 0) return { text: `🔍 พบ ${docs.length} รายการ`, docs: docs.slice(0, 8) };
-  return { text: 'ไม่พบเอกสาร ลองพิมพ์ "ทั้งหมด" เพื่อดูรายการ', docs: [] };
+  if (docs.length > 0) {
+    return { text: '🔍 พบเอกสาร ' + docs.length + ' รายการ จากคำค้นหา "' + msg + '"\nเลือกดาวน์โหลดได้เลยค่ะ:', docs: docs.slice(0, 8) };
+  }
+  
+  return { text: 'ขอโทษนะคะ ไม่พบเอกสารที่ตรงกับ "' + msg + '" 😅\n\n**ลองค้นหาใหม่ เช่น:**\n• "ระเบียบ อวท"\n• "แบบฟอร์มใบสมัครสมาชิก"\n• "ปม.1"\n• "พิธีจุดประกายแสงแห่งปัญญา"\n• "เพลงมาร์ชองค์การ"\n\nหรือพิมพ์ "ทั้งหมด" เพื่อดูเอกสารทั้งหมด', docs: [] };
 }
 
 function sendChat(text) {
@@ -460,13 +520,21 @@ function sendChat(text) {
   state.chatInput = '';
   state.typing = true;
   render();
+  scrollChat();
   setTimeout(() => {
     const res = aiResponse(msg);
     state.messages.push({ id: 'b-' + Date.now(), role: 'bot', text: res.text, docs: res.docs, time: new Date() });
     state.typing = false;
     render();
-    document.getElementById('chat-end')?.scrollIntoView({ behavior: 'smooth' });
-  }, 500);
+    scrollChat();
+  }, 600 + Math.random() * 500);
+}
+
+function scrollChat() {
+  setTimeout(() => {
+    const el = document.getElementById('chat-end');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }, 50);
 }
 
 function handleDownload(doc, btnId) {
@@ -476,28 +544,29 @@ function handleDownload(doc, btnId) {
   setTimeout(() => { state.downloadedIds.delete(btnId); render(); }, 2000);
 }
 
-// ==================== SVG ICONS ====================
+// SVG icons
 const SVG = {
-  send: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>',
-  search: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
-  download: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
-  plus: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
-  edit: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
-  trash: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
-  x: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
-  alert: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
-  folder: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>',
-  file: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
-  settings: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
-  chat: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
-  book: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
-  upload: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+  send: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>',
+  search: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+  download: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+  plus: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  edit: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+  trash: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+  x: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  alert: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+  folder: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>',
+  file: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+  settings: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+  chat: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+  book: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+  upload: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
 };
 
 const quickActions = [
   {label:'📜 ระเบียบ อวท.', q:'ระเบียบ อวท'},
-  {label:'📝 อวท.10 ใบสมัครสมาชิก', q:'อวท.10'},
-  {label:'📋 ปม.1', q:'ปم.1'},
+  {label:'📝 แบบฟอร์ม อวท.', q:'แบบฟอร์ม อวท'},
+  {label:'📋 คู่มือประเมิน', q:'คู่มือประเมิน'},
+  {label:'📋 ปม.1', q:'ปม.1'},
   {label:'🎭 พิธีจุดประกายแสง', q:'พิธีจุดประกายแสงแห่งปัญญา'},
   {label:'🎭 กิจกรรมคนดี 5 แผน', q:'กิจกรรมคนดี 5 แผน'},
   {label:'📎 เพลงมาร์ช อวท.', q:'เพลงมาร์ชองค์การ'},
@@ -519,122 +588,416 @@ function renderDocCard(doc, prefix) {
 
 function performBrowseSearch() {
   const input = document.getElementById('browseSearchInput');
-  if (input) { state.browseSearch = input.value; state.browseCat = null; render(); }
+  if (input) {
+    state.browseSearch = input.value;
+    state.browseCat = null;
+    render();
+  }
 }
 
 function performManageSearch() {
   const input = document.getElementById('manageSearchInput');
-  if (input) { state.manageSearch = input.value; state.manageCat = null; render(); }
-}
-
-function handleFormSubmit() {
-  const name = document.getElementById('f_name')?.value.trim();
-  const shortName = document.getElementById('f_short')?.value.trim();
-  const category = document.getElementById('f_cat')?.value;
-  const subcategory = document.getElementById('f_subcat')?.value.trim() || getCatInfo(category).name;
-  const description = document.getElementById('f_desc')?.value.trim();
-  const formNumber = document.getElementById('f_formnum')?.value.trim();
-  const keywords = document.getElementById('f_keywords')?.value.split(',').map(k => k.trim()).filter(k => k);
-  if (!name || !shortName || !description) { showToast('กรอกข้อมูลให้ครบ', 'error'); return; }
-  const data = { name, shortName, category, subcategory, description, keywords, formNumber };
-  if (state.editDoc) updateDoc(state.editDoc.id, data);
-  else addDoc(data);
-  state.showModal = false;
-  state.editDoc = null;
-  render();
-}
-
-function confirmDelete(id) { removeDoc(id); state.deleteDoc = null; render(); }
-
-function handleFileSelect(input) {
-  const area = document.getElementById('uploadArea');
-  const txt = document.getElementById('uploadText');
-  if (!area || !txt) return;
-  if (input.files && input.files[0]) {
-    const file = input.files[0];
-    area.classList.add('attached');
-    txt.innerHTML = '<div class="up-icon" style="color:#16a34a;opacity:1;font-size:28px">✅</div><p style="color:#16a34a;font-weight:600">แนบไฟล์เรียบร้อยแล้ว!</p><small style="color:#374151">' + file.name + '</small><small style="color:#9ca3af">ขนาด: ' + (file.size / 1024).toFixed(1) + ' KB</small>';
+  if (input) {
+    state.manageSearch = input.value;
+    state.manageCat = null;
+    const catSelect = document.getElementById('manageCatSelect');
+    if (catSelect) catSelect.value = '';
+    render();
   }
 }
 
 function render() {
   const app = document.getElementById('app');
-  if (!app) return;
-  
-  let toastHtml = state.toast ? `<div class="toast ${state.toast.type}">${state.toast.type === 'success' ? '✅' : state.toast.type === 'error' ? '❌' : 'ℹ️'} ${state.toast.msg}<button class="toast-close" onclick="state.toast=null;render()">✕</button></div>` : '';
-  
+
+  let toastHtml = '';
+  if (state.toast) {
+    toastHtml = `<div class="toast ${state.toast.type} animate-fade">
+      ${state.toast.type === 'success' ? '✅' : state.toast.type === 'error' ? '❌' : 'ℹ️'} ${state.toast.msg}
+      <button class="toast-close" onclick="state.toast=null;render()">✕</button>
+    </div>`;
+  }
+
   let modalHtml = '';
   if (state.showModal) {
     const ed = state.editDoc;
-    modalHtml = `<div class="modal-overlay" onclick="if(event.target===this){state.showModal=false;state.editDoc=null;render()}">
+    const existingFile = ed && ed.fileData && ed.fileName;
+    const uploadInitClass = existingFile ? 'attached' : '';
+    const uploadInitContent = existingFile
+      ? `<div class="up-icon" style="color:#16a34a;opacity:1;font-size:28px">✅</div>
+         <p style="color:#16a34a;font-weight:600">มีไฟล์แนบอยู่แล้ว</p>
+         <small style="color:#374151">${ed.fileName}</small>
+         <small style="color:#9ca3af">คลิกเพื่อเปลี่ยนไฟล์ใหม่</small>`
+      : `<div class="up-icon">${SVG.upload}</div><p>คลิกหรือลากไฟล์มาวางที่นี่</p><small>รองรับ PDF, Word, Excel, PowerPoint และไฟล์อื่นๆ</small>`;
+
+    modalHtml = `<div class="modal-overlay animate-fade" onclick="if(event.target===this){state.showModal=false;state.editDoc=null;render()}">
       <div class="modal">
         <div class="modal-header">
-          <div class="mh-left"><div class="mh-icon">${ed ? '✏️' : '➕'}</div><div><h2>${ed ? 'แก้ไขเอกสาร' : 'เพิ่มเอกสาร/แบบฟอร์มใหม่'}</h2><small>กรอกข้อมูลเอกสารที่ต้องการ${ed ? 'แก้ไข' : 'เพิ่ม'}</small></div></div>
-          <button class="modal-close" onclick="state.showModal=false;state.editDoc=null;render()">✕</button>
+          <div class="mh-left">
+            <div class="mh-icon">${ed ? '✏️' : '➕'}</div>
+            <div><h2>${ed ? 'แก้ไขเอกสาร' : 'เพิ่มเอกสาร/แบบฟอร์มใหม่'}</h2><small>กรอกข้อมูลเอกสารที่ต้องการ${ed ? 'แก้ไข' : 'เพิ่ม'}</small></div>
+          </div>
+          <button class="modal-close" onclick="state.showModal=false;state.editDoc=null;render()">${SVG.x}</button>
         </div>
         <div class="modal-body">
-          <div class="form-group"><label>📎 แนบไฟล์เอกสาร${ed ? ' (ไม่บังคับ — ถ้าไม่เลือกจะใช้ไฟล์เดิม)' : ' (ถ้ามี)'}</label><div class="upload-area" id="uploadArea"><input type="file" id="fileInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar" onchange="handleFileSelect(this)"><div class="upload-text-content" id="uploadText"><div class="up-icon">${SVG.upload}</div><p>คลิกหรือลากไฟล์มาวางที่นี่</p><small>รองรับ PDF, Word, Excel, PowerPoint และไฟล์อื่นๆ</small></div></div></div>
-          <div class="form-group"><label>ชื่อเอกสาร <span class="req">*</span></label><input type="text" id="f_name" value="${ed ? ed.name.replace(/"/g,'&quot;') : ''}"></div>
-          <div class="form-group"><label>ชื่อย่อ <span class="req">*</span></label><input type="text" id="f_short" value="${ed ? ed.shortName.replace(/"/g,'&quot;') : ''}"></div>
-          <div class="form-row"><div class="form-group"><label>หมวดหมู่ <span class="req">*</span></label><select id="f_cat">${categories.map(c => `<option value="${c.id}" ${ed && ed.category === c.id ? 'selected' : ''}>${c.icon} ${c.name}</option>`).join('')}</select></div><div class="form-group"><label>หมวดหมู่ย่อย</label><input type="text" id="f_subcat" value="${ed ? ed.subcategory || '' : ''}"></div></div>
-          <div class="form-group"><label>รายละเอียด <span class="req">*</span></label><textarea id="f_desc">${ed ? ed.description : ''}</textarea></div>
-          <div class="form-row"><div class="form-group"><label>เลขที่แบบฟอร์ม (ถ้ามี)</label><input type="text" id="f_formnum" value="${ed && ed.formNumber ? ed.formNumber : ''}"></div><div class="form-group"><label>คำค้นหา (Keywords)</label><input type="text" id="f_keywords" value="${ed ? (ed.keywords||[]).join(', ') : ''}"><div class="hint">เพิ่มคำค้นหาเพื่อให้ AI ค้นหาง่ายขึ้น</div></div></div>
-          <div class="form-actions"><button type="button" onclick="handleFormSubmit()" class="submit-btn">${ed ? '💾 บันทึกการแก้ไข' : '➕ เพิ่มเอกสาร'}</button><button type="button" class="cancel-btn" onclick="state.showModal=false;state.editDoc=null;render()">ยกเลิก</button></div>
+          <div class="form-group">
+            <label>📎 แนบไฟล์เอกสาร${ed ? ' (ไม่บังคับ — ถ้าไม่เลือกจะใช้ไฟล์เดิม)' : ' (ถ้ามี)'}</label>
+            <div class="upload-area ${uploadInitClass}" id="uploadArea">
+              <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar" onchange="handleFileSelect(this)">
+              <div class="upload-text-content" id="uploadText">${uploadInitContent}</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>ชื่อเอกสาร <span class="req">*</span></label>
+            <input type="text" id="f_name" value="${ed ? ed.name.replace(/"/g,'&quot;') : ''}" placeholder="เช่น แบบฟอร์มใบสมัครสมาชิก อวท." required>
+          </div>
+          <div class="form-group">
+            <label>ชื่อย่อ <span class="req">*</span></label>
+            <input type="text" id="f_short" value="${ed ? ed.shortName.replace(/"/g,'&quot;') : ''}" placeholder="เช่น ใบสมัครสมาชิก" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>หมวดหมู่ <span class="req">*</span></label>
+              <select id="f_cat">
+                ${categories.map(c => `<option value="${c.id}" ${ed && ed.category === c.id ? 'selected' : ''}>${c.icon} ${c.name}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>หมวดหมู่ย่อย</label>
+              <input type="text" id="f_subcat" value="${ed ? ed.subcategory.replace(/"/g,'&quot;') : ''}" placeholder="เช่น สมัครสมาชิก">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>รายละเอียด <span class="req">*</span></label>
+            <textarea id="f_desc" placeholder="อธิบายเกี่ยวกับเอกสาร/แบบฟอร์มนี้..." required>${ed ? ed.description : ''}</textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>เลขที่แบบฟอร์ม (ถ้ามี)</label>
+              <input type="text" id="f_formnum" value="${ed && ed.formNumber ? ed.formNumber : ''}" placeholder="เช่น อวท.3">
+            </div>
+            <div class="form-group">
+              <label>คำค้นหา (Keywords)</label>
+              <input type="text" id="f_keywords" value="${ed ? (ed.keywords||[]).join(', ') : ''}" placeholder="คั่นด้วย , เช่น สมัคร, สมาชิก">
+              <div class="hint">เพิ่มคำค้นหาเพื่อให้ AI ค้นหาง่ายขึ้น</div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" onclick="handleFormSubmit()" class="submit-btn">${ed ? '💾 บันทึกการแก้ไข' : '➕ เพิ่มเอกสาร'}</button>
+            <button type="button" class="cancel-btn" onclick="state.showModal=false;state.editDoc=null;render()">ยกเลิก</button>
+          </div>
         </div>
       </div>
     </div>`;
   }
-  
+
   let confirmHtml = '';
   if (state.deleteDoc) {
-    confirmHtml = `<div class="modal-overlay" onclick="if(event.target===this){state.deleteDoc=null;render()}"><div class="confirm-dialog"><div class="cd-top"><div class="cd-icon">⚠️</div><div><h3>ยืนยันการลบเอกสาร</h3><p>ต้องการลบ "${state.deleteDoc.shortName}" ออกจากระบบหรือไม่?</p></div></div><div class="cd-actions"><button class="cd-confirm" onclick="confirmDelete('${state.deleteDoc.id}')">🗑️ ยืนยันลบ</button><button class="cd-cancel" onclick="state.deleteDoc=null;render()">ยกเลิก</button></div></div></div>`;
+    const safeShort = (state.deleteDoc.shortName || '').replace(/'/g, "\\'");
+    confirmHtml = `<div class="modal-overlay animate-fade" onclick="if(event.target===this){state.deleteDoc=null;render()}">
+      <div class="confirm-dialog animate-fade">
+        <div class="cd-top">
+          <div class="cd-icon">${SVG.alert}</div>
+          <div><h3>ยืนยันการลบเอกสาร</h3><p>ต้องการลบ "${state.deleteDoc.shortName}" ออกจากระบบหรือไม่?</p></div>
+        </div>
+        <div class="cd-actions">
+          <button class="cd-confirm" onclick="confirmDelete('${state.deleteDoc.id}','${safeShort}')">🗑️ ยืนยันลบ</button>
+          <button class="cd-cancel" onclick="state.deleteDoc=null;render()">ยกเลิก</button>
+        </div>
+      </div>
+    </div>`;
   }
-  
+
   let tabContent = '';
+
   if (state.tab === 'chat') {
     let msgsHtml = state.messages.map(m => {
       const isUser = m.role === 'user';
       let docsHtml = '';
-      if (m.docs && m.docs.length > 0) docsHtml = '<div class="msg-docs">' + m.docs.map(d => renderDocCard(d, 'chat-')).join('') + '</div>';
+      if (m.docs && m.docs.length > 0) {
+        docsHtml = '<div class="msg-docs">' + m.docs.map(d => renderDocCard(d, 'chat-')).join('') + '</div>';
+      }
       return `<div class="msg ${isUser ? 'user' : ''} animate-slide">
         <div class="msg-avatar ${isUser ? 'usr' : 'bot'}">${isUser ? '👤' : '<img src="bot.png" class="msg-avatar-img">'}</div>
-        <div><div class="msg-bubble ${isUser ? 'usr' : 'bot'}">${formatText(m.text)}</div>${docsHtml}<div class="msg-time">${formatTime(m.time)}</div></div>
+        <div>
+          <div class="msg-bubble ${isUser ? 'usr' : 'bot'}">${formatText(m.text)}</div>
+          ${docsHtml}
+          <div class="msg-time">${formatTime(m.time)}</div>
+        </div>
       </div>`;
     }).join('');
-    if (state.typing) msgsHtml += `<div class="msg animate-slide"><div class="msg-avatar bot">🤖</div><div class="msg-bubble bot"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>`;
+
+    if (state.typing) {
+      msgsHtml += `<div class="msg animate-slide"><div class="msg-avatar bot">🤖</div><div class="msg-bubble bot"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>`;
+    }
     msgsHtml += '<div id="chat-end"></div>';
-    let quickHtml = state.messages.length <= 1 ? '<div class="quick-actions">' + quickActions.map(a => `<button class="quick-btn" onclick="sendChat(\'${a.q}\')">${a.label}</button>`).join('') + '</div>' : '';
-    const sidebarHtml = `<div class="sidebar"><div class="sidebar-header">📁 หมวดหมู่เอกสาร</div><div style="padding:6px">${categories.map(c => `<div class="sidebar-item" onclick="sendChat('${c.name}')"><span class="icon">${c.icon}</span><span class="label">${c.name}</span><span class="count">${getDocsByCat(c.id).length}</span></div>`).join('')}</div><div class="sidebar-tip"><div class="tip-title">💡 แนะนำ</div><p>พิมพ์ "ช่วย" เพื่อดูวิธีใช้ หรือพิมพ์ชื่อแบบฟอร์มที่ต้องการค้นหา</p></div></div>`;
-    tabContent = `<div class="chat-layout">${sidebarHtml}<div class="chat-main"><div class="chat-messages">${msgsHtml}</div>${quickHtml}<div class="chat-input"><input type="text" id="chatInput" placeholder="พิมพ์ค้นหา..." onkeydown="if(event.key==='Enter')sendChat()"><button class="send-btn" onclick="sendChat()">${SVG.send}</button></div><div class="chat-hint">เอกสาร อวท. — ดาวน์โหลดเฉพาะฟอร์มที่ต้องการ (ครบ 81 รายการ)</div></div></div>`;
+
+    let quickHtml = '';
+    if (state.messages.length <= 1) {
+      quickHtml = '<div class="quick-actions">' + quickActions.map(a => `<button class="quick-btn" onclick="sendChat(\'${a.q}\')">${a.label}</button>`).join('') + '</div>';
+    }
+
+    const sidebarHtml = `<div class="sidebar">
+      <div class="sidebar-header">${SVG.folder} หมวดหมู่เอกสาร</div>
+      <div style="padding:6px">
+        ${categories.map(c => {
+          const count = getDocsByCat(c.id).length;
+          return `<div class="sidebar-item" onclick="sendChat('${c.name}')">
+            <span class="icon">${c.icon}</span>
+            <span class="label">${c.name}</span>
+            <span class="count">${count}</span>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="sidebar-tip">
+        <div class="tip-title">💡 แนะนำ</div>
+        <p>พิมพ์ "ช่วย" เพื่อดูวิธีใช้ หรือพิมพ์ชื่อแบบฟอร์มที่ต้องการค้นหา</p>
+      </div>
+    </div>`;
+
+    tabContent = `<div class="chat-layout">
+      ${sidebarHtml}
+      <div class="chat-main">
+        <div class="chat-messages" id="chatMessages">${msgsHtml}</div>
+        ${quickHtml}
+        <div class="chat-input">
+          <input type="text" id="chatInput" value="${state.chatInput.replace(/"/g,'&quot;')}" placeholder="พิมพ์ค้นหาแบบฟอร์มที่ต้องการ..." oninput="state.chatInput=this.value" onkeydown="if(event.key==='Enter'){event.preventDefault();sendChat()}">
+          <button class="send-btn" onclick="sendChat()" ${state.typing ? 'disabled' : ''}>${SVG.send}</button>
+        </div>
+        <div class="chat-hint">เอกสาร อวท. — ดาวน์โหลดเฉพาะฟอร์มที่ต้องการ ไม่ต้องโหลดทั้งเล่ม</div>
+      </div>
+    </div>`;
+
   } else if (state.tab === 'browse') {
-    let filtered = state.browseCat ? getDocsByCat(state.browseCat) : (state.browseSearch ? searchDocs(state.browseSearch) : documents);
-    let listHtml = filtered.length ? filtered.map(doc => `<div class="doc-row"><div class="row-icon">${getCatInfo(doc.category).icon}</div><div class="row-info"><h4>${doc.name}</h4><div class="row-meta"><span>${doc.subcategory}</span>${doc.formNumber ? `<span class="form-tag">${doc.formNumber}</span>` : ''}</div></div><button class="row-dl-btn" onclick="handleDownload(documents.find(d=>d.id==='${doc.id}'),'browse-${doc.id}')">📥 ดาวน์โหลด</button></div>`).join('') : '<div class="empty-state">📭 ไม่พบเอกสาร</div>';
-    tabContent = `<div class="search-bar">${SVG.search}<input type="text" id="browseSearchInput" placeholder="ค้นหาเอกสาร..." value="${state.browseSearch}" onkeydown="if(event.key==='Enter')performBrowseSearch()"><button style="position:absolute;right:5px;top:50%;transform:translateY(-50%);background:var(--primary);color:#fff;border:none;padding:6px 12px;border-radius:8px" onclick="performBrowseSearch()">ค้นหา</button></div>
-      <div class="cat-grid"><div class="cat-card ${!state.browseCat && !state.browseSearch ? 'active' : ''}" onclick="state.browseCat=null;state.browseSearch='';document.getElementById('browseSearchInput').value='';render()"><span class="c-icon">📚</span><span class="c-name">ทั้งหมด</span><span class="c-count">${documents.length}</span></div>${categories.map(c => `<div class="cat-card ${state.browseCat === c.id ? 'active' : ''}" onclick="state.browseCat='${c.id}';state.browseSearch='';document.getElementById('browseSearchInput').value='';render()"><span class="c-icon">${c.icon}</span><span class="c-name">${c.name}</span><span class="c-count">${getDocsByCat(c.id).length}</span></div>`).join('')}</div>
-      <div class="doc-list"><div class="doc-list-header"><h3>📄 เอกสารทั้งหมด <span>(${filtered.length})</span></h3></div>${listHtml}</div>`;
+    let filtered = documents;
+    if (state.browseCat) {
+      filtered = getDocsByCat(state.browseCat);
+    } else if (state.browseSearch) {
+      const s = state.browseSearch.toLowerCase();
+      filtered = documents.filter(d => (d.name + d.description + (d.keywords||[]).join(' ')).toLowerCase().includes(s));
+    }
+
+    let listHtml = '';
+    if (filtered.length === 0) {
+      listHtml = `<div class="empty-state">${SVG.search}<p>ไม่พบเอกสารที่ตรงกับคำค้นหา</p><small>ลองค้นหาด้วยคำอื่น</small></div>`;
+    } else {
+      listHtml = filtered.map(doc => {
+        const cat = getCatInfo(doc.category);
+        const btnId = 'browse-' + doc.id;
+        const done = state.downloadedIds.has(btnId);
+        const hasFile = doc.fileData && doc.fileName;
+        return `<div class="doc-row">
+          <div class="row-icon">${cat.icon}</div>
+          <div class="row-info">
+            <h4>${doc.name}</h4>
+            <div class="row-meta">
+              <span>${doc.subcategory}</span>
+              ${doc.formNumber ? '<span class="form-tag">' + doc.formNumber + '</span>' : ''}
+              ${hasFile ? '<span style="font-size:9px;background:#f0fdf4;color:#16a34a;padding:2px 7px;border-radius:4px;font-weight:600">📎 มีไฟล์แนบ</span>' : ''}
+            </div>
+          </div>
+          <button class="row-dl-btn ${done ? 'done' : ''}" onclick="handleDownload(documents.find(d=>d.id==='${doc.id}'),'${btnId}')">${SVG.download} ${done ? 'สำเร็จ!' : (hasFile ? 'ดาวน์โหลดไฟล์' : 'ดาวน์โหลด')}</button>
+        </div>`;
+      }).join('');
+    }
+
+    const headerLabel = state.browseCat
+      ? categories.find(c=>c.id===state.browseCat)?.name
+      : state.browseSearch ? 'ผลการค้นหา "'+state.browseSearch+'"' : 'เอกสารทั้งหมด';
+
+    tabContent = `
+      <div class="search-bar">
+        ${SVG.search}
+        <input type="text" id="browseSearchInput" value="${state.browseSearch.replace(/"/g,'&quot;')}" placeholder="ค้นหาเอกสารและแบบฟอร์ม..." onkeydown="if(event.key==='Enter'){event.preventDefault();performBrowseSearch()}">
+        <button style="position:absolute; right:5px; top:50%; transform:translateY(-50%); background:var(--primary); color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:12px;" onclick="performBrowseSearch()">ค้นหา</button>
+      </div>
+      <div class="cat-grid">
+        <div class="cat-card ${!state.browseCat && !state.browseSearch ? 'active' : ''}" onclick="state.browseCat=null;state.browseSearch='';document.getElementById('browseSearchInput').value='';render()">
+          <span class="c-icon">📚</span><span class="c-name">ทั้งหมด</span><span class="c-count">${documents.length} รายการ</span>
+        </div>
+        ${categories.map(c => {
+          const cnt = getDocsByCat(c.id).length;
+          return `<div class="cat-card ${state.browseCat===c.id?'active':''}" onclick="state.browseCat=state.browseCat==='${c.id}'?null:'${c.id}';state.browseSearch='';document.getElementById('browseSearchInput').value='';render()">
+            <span class="c-icon">${c.icon}</span><span class="c-name">${c.name}</span><span class="c-count">${cnt} รายการ</span>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="doc-list">
+        <div class="doc-list-header"><h3>${SVG.file} ${headerLabel} <span>(${filtered.length} รายการ)</span></h3></div>
+        ${listHtml}
+      </div>`;
+
   } else if (state.tab === 'manage') {
-    let filtered = state.manageCat ? getDocsByCat(state.manageCat) : (state.manageSearch ? documents.filter(d => (d.name + d.shortName).toLowerCase().includes(state.manageSearch.toLowerCase())) : documents);
-    let listHtml = filtered.length ? filtered.map(doc => `<div class="manage-row"><div class="row-icon">${getCatInfo(doc.category).icon}</div><div class="row-info"><h4>${doc.name}</h4><div class="row-meta"><span class="cat-tag">${getCatInfo(doc.category).name}</span><span>${doc.subcategory}</span>${doc.formNumber ? `<span class="form-tag">${doc.formNumber}</span>` : ''}</div></div><div class="row-actions"><button class="act-btn dl" onclick="downloadDoc(documents.find(d=>d.id==='${doc.id}'))">📥</button><button class="act-btn edit" onclick="state.editDoc=documents.find(d=>d.id==='${doc.id}');state.showModal=true;render()">✏️</button><button class="act-btn del" onclick="state.deleteDoc=documents.find(d=>d.id==='${doc.id}');render()">🗑️</button></div></div>`).join('') : '<div class="empty-state">📭 ไม่พบเอกสาร</div>';
-    tabContent = `<div class="manage-header"><div class="mh-inner"><div><h2>⚙️ จัดการเอกสารและแบบฟอร์ม</h2><p>เพิ่ม แก้ไข หรือลบเอกสาร — ทั้งหมด ${documents.length} รายการ (ครบทุกหมวด)</p></div><button class="add-btn" onclick="state.editDoc=null;state.showModal=true;render()">➕ เพิ่มเอกสารใหม่</button></div></div>
-      <div class="manage-filters"><input type="text" id="manageSearchInput" placeholder="🔍 ค้นหาเอกสาร..." value="${state.manageSearch}" onkeydown="if(event.key==='Enter')performManageSearch()"><button style="background:var(--primary);color:#fff;border:none;padding:0 15px;border-radius:12px" onclick="performManageSearch()">ค้นหา</button><select id="manageCatSelect" onchange="state.manageCat=this.value||null;render()"><option value="">ทุกหมวดหมู่</option>${categories.map(c => `<option value="${c.id}" ${state.manageCat===c.id?'selected':''}>${c.icon} ${c.name}</option>`).join('')}</select></div>
-      <div class="stats-grid">${categories.map(c => `<div class="stat-card ${state.manageCat===c.id?'active':''}" onclick="state.manageCat='${c.id}';render()"><div class="s-icon">${c.icon}</div><div class="s-num">${getDocsByCat(c.id).length}</div><div class="s-label">${c.name}</div></div>`).join('')}</div>
-      <div class="doc-list"><div class="doc-list-header"><h3>📄 เอกสาร <span>(${filtered.length})</span></h3><button style="background:none;border:none;color:var(--primary)" onclick="state.editDoc=null;state.showModal=true;render()">➕ เพิ่มใหม่</button></div>${listHtml}</div>
-      <div class="info-box"><h4></h4><div class="info-grid"><div><p></p><small></small></div><div><p></p><small></small></div><div><p></p><small></small></div><div><p></p><small></small></div><div><p></p><small></small></div></div></div>`;
+    let filtered = documents;
+    if (state.manageCat) {
+      filtered = documents.filter(d => d.category === state.manageCat);
+    } else if (state.manageSearch) {
+      const s = state.manageSearch.toLowerCase();
+      filtered = documents.filter(d => (d.name + d.shortName + d.description).toLowerCase().includes(s));
+    }
+
+    let listHtml = '';
+    if (filtered.length === 0) {
+      listHtml = `<div class="empty-state">${SVG.file}<p>ไม่พบเอกสาร</p><small>ลองค้นหาด้วยคำอื่น หรือเพิ่มเอกสารใหม่</small><br><br><button class="add-btn" onclick="state.editDoc=null;state.showModal=true;render()" style="margin:0 auto">${SVG.plus} เพิ่มเอกสารใหม่</button></div>`;
+    } else {
+      listHtml = filtered.map(doc => {
+        const cat = getCatInfo(doc.category);
+        const hasFile = doc.fileData && doc.fileName;
+        const safeId = doc.id.replace(/'/g, "\\'");
+        return `<div class="manage-row">
+          <div class="row-icon">${cat.icon}</div>
+          <div class="row-info">
+            <h4>${doc.name}</h4>
+            <div class="row-meta">
+              <span class="cat-tag">${cat.name}</span>
+              <span>${doc.subcategory}</span>
+              ${doc.formNumber ? '<span class="form-tag">' + doc.formNumber + '</span>' : ''}
+              ${hasFile ? '<span class="has-file">📎 ' + doc.fileName + '</span>' : ''}
+            </div>
+          </div>
+          <div class="row-actions">
+            <button class="act-btn dl" title="ดาวน์โหลด" onclick="downloadDoc(documents.find(d=>d.id==='${safeId}'))">${SVG.download}</button>
+            <button class="act-btn edit" title="แก้ไข" onclick="state.editDoc=documents.find(d=>d.id==='${safeId}');state.showModal=true;render()">${SVG.edit}</button>
+            <button class="act-btn del" title="ลบ" onclick="state.deleteDoc=documents.find(d=>d.id==='${safeId}');render()">${SVG.trash}</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    tabContent = `
+      <div class="manage-header">
+        <div class="mh-inner">
+          <div><h2>⚙️ จัดการเอกสารและแบบฟอร์ม</h2><p>เพิ่ม แก้ไข หรือลบเอกสาร/แบบฟอร์มในระบบ — ทั้งหมด ${documents.length} รายการ</p></div>
+          <button class="add-btn" onclick="state.editDoc=null;state.showModal=true;render()">${SVG.plus} เพิ่มเอกสารใหม่</button>
+        </div>
+      </div>
+      <div class="manage-filters">
+        <div style="display:flex; gap:5px; flex:1;">
+          <input type="text" id="manageSearchInput" value="${state.manageSearch.replace(/"/g,'&quot;')}" placeholder="🔍 ค้นหาเอกสาร..." style="flex:1;" onkeydown="if(event.key==='Enter'){event.preventDefault();performManageSearch()}">
+          <button style="background:var(--primary); color:white; border:none; padding:0 15px; border-radius:12px; cursor:pointer; font-weight:600;" onclick="performManageSearch()">ค้นหา</button>
+        </div>
+        <select id="manageCatSelect" onchange="state.manageCat=this.value||null;state.manageSearch='';document.getElementById('manageSearchInput').value='';render()">
+          <option value="">ทุกหมวดหมู่</option>
+          ${categories.map(c => `<option value="${c.id}" ${state.manageCat===c.id?'selected':''}>${c.icon} ${c.name}</option>`).join('')}
+        </select>
+      </div>
+      <div class="stats-grid">
+        ${categories.map(c => {
+          const cnt = documents.filter(d=>d.category===c.id).length;
+          return `<div class="stat-card ${state.manageCat===c.id?'active':''}" onclick="state.manageCat=state.manageCat==='${c.id}'?null:'${c.id}';state.manageSearch='';document.getElementById('manageSearchInput').value='';document.getElementById('manageCatSelect').value='${state.manageCat===c.id ? '' : c.id}';render()">
+            <div class="s-icon">${c.icon}</div><div class="s-num">${cnt}</div><div class="s-label">${c.name}</div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="doc-list">
+        <div class="doc-list-header">
+          <h3>${SVG.file} ${state.manageCat ? categories.find(c=>c.id===state.manageCat)?.name : state.manageSearch ? 'ผลการค้นหา "'+state.manageSearch+'"' : 'เอกสารทั้งหมด'} <span>(${filtered.length} รายการ)</span></h3>
+          <button style="background:none;border:none;color:var(--primary);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px" onclick="state.editDoc=null;state.showModal=true;render()">${SVG.plus} เพิ่มใหม่</button>
+        </div>
+        ${listHtml}
+      </div>
+      <div class="info-box">
+        <h4>✨ วิธีใช้งานระบบจัดการเอกสาร (5 หมวดหมู่ตามคู่มือฯ)</h4>
+        <div class="info-grid">
+          <div class="info-item"><div class="ii-icon add">📜</div><div><p>ระเบียบและแนวปฏิบัติ</p><small>ระเบียบ อวท. พ.ศ.2566 และแนวปฏิบัติประกอบระเบียบ เรื่องที่ 1-13</small></div></div>
+          <div class="info-item"><div class="ii-icon edit-i">📝</div><div><p>แบบฟอร์ม อวท.</p><small>แบบฟอร์ม อวท.01-39 สำหรับผู้ถูกประเมิน (สถานศึกษา/สมาชิก)</small></div></div>
+          <div class="info-item"><div class="ii-icon del-i">📋</div><div><p>คู่มือและแบบประเมิน</p><small>คู่มือประเมินองค์การฯ และแบบประเมิน ปม.1-11 สำหรับกรรมการ</small></div></div>
+          <div class="info-item"><div class="ii-icon add">🎭</div><div><p>แนวทางการจัดกิจกรรมและพิธีการ</p><small>กิจกรรม 5 แผนคนดี/คนเก่ง และพิธีการต่างๆ</small></div></div>
+          <div class="info-item"><div class="ii-icon edit-i">📎</div><div><p>ภาคผนวก</p><small>คณะผู้จัดทำ เพลงมาร์ชองค์การ เพลงชาวอวท.</small></div></div>
+        </div>
+      </div>`;
   }
-  
-  app.innerHTML = `${toastHtml}${modalHtml}${confirmHtml}<header><div class="header-inner"><div class="header-left"><div class="logo"><img src="https://static.wixstatic.com/media/42949e_5cc1163de9b0451f96a4e0704535f1d4~mv2.png" alt="logo"></div><div class="header-title"><h1>อวท. วิทยาลัยการอาชีพบ้านโป่ง</h1><p>ระบบจัดการเอกสาร | 5 หมวดหมู่ตามคู่มือฯ | ครบทุกแบบฟอร์ม อวท.01-39</p></div></div><div class="header-badges"><span class="badge">✨ ผู้ช่วย อวท.</span><span class="badge">📄 ${documents.length} เอกสาร</span></div></div></header>
-    <div class="tabs"><div class="tabs-inner"><button class="tab-btn ${state.tab==='chat'?'active':''}" onclick="state.tab='chat';render()">💬 AI ผู้ช่วย</button><button class="tab-btn ${state.tab==='browse'?'active':''}" onclick="state.tab='browse';render()">📚 คลังเอกสาร</button><button class="tab-btn ${state.tab==='manage'?'active':''}" onclick="state.tab='manage';render()">⚙️ จัดการเอกสาร</button></div></div>
-    <div class="content">${tabContent}</div><footer>© 2567 องค์การนักวิชาชีพในอนาคตแห่งประเทศไทย | วิทยาลัยการอาชีพบ้านโป่ง จ.ราชบุรี</footer>`;
+
+  app.innerHTML = `
+    ${toastHtml}${modalHtml}${confirmHtml}
+    <header>
+      <div class="header-inner">
+        <div class="header-left">
+          <div class="logo">
+            <img src="https://static.wixstatic.com/media/42949e_5cc1163de9b0451f96a4e0704535f1d4~mv2.png/v1/fit/w_2500,h_1330,al_c/42949e_5cc1163de9b0451f96a4e0704535f1d4~mv2.png" alt="โลโก้">
+          </div>
+          <div class="header-title">
+            <h1>อวท. วิทยาลัยการอาชีพบ้านโป่ง</h1>
+            <p>องค์การนักวิชาชีพในอนาคตแห่งประเทศไทย</p>
+          </div>
+        </div>
+        <div class="header-badges">
+          <span class="badge">✨ ผู้ช่วย อวท.</span>
+          <span class="badge">📄 ${documents.length} เอกสาร</span>
+        </div>
+      </div>
+    </header>
+    <div class="tabs">
+      <div class="tabs-inner">
+        <button class="tab-btn ${state.tab==='chat'?'active':''}" onclick="state.tab='chat';render()">${SVG.chat} AI ผู้ช่วย</button>
+        <button class="tab-btn ${state.tab==='browse'?'active':''}" onclick="state.tab='browse';render()">${SVG.book} คลังเอกสาร</button>
+        <button class="tab-btn ${state.tab==='manage'?'active':''}" onclick="state.tab='manage';render()">${SVG.settings} จัดการเอกสาร</button>
+      </div>
+    </div>
+    <div class="content">${tabContent}</div>
+    <footer>© 2567 องค์การนักวิชาชีพในอนาคตแห่งประเทศไทย | วิทยาลัยการอาชีพบ้านโป่ง จ.ราชบุรี</footer>
+  `;
 }
+
+// ==================== FORM SUBMIT ====================
+window.handleFormSubmit = function() {
+  const name = document.getElementById('f_name').value.trim();
+  const shortName = document.getElementById('f_short').value.trim();
+  const category = document.getElementById('f_cat').value;
+  const subcategory = document.getElementById('f_subcat').value.trim() || getCatInfo(category).name;
+  const description = document.getElementById('f_desc').value.trim();
+  const formNumber = document.getElementById('f_formnum').value.trim() || undefined;
+  const keywords = document.getElementById('f_keywords').value
+    .split(',').map(k => k.trim()).filter(k => k.length > 0);
+
+  if (!name || !shortName || !description) {
+    showToast('กรุณากรอกข้อมูลที่จำเป็นให้ครบ', 'error');
+    return;
+  }
+
+  const fileInput = document.getElementById('fileInput');
+  const file = fileInput && fileInput.files && fileInput.files[0];
+
+  const saveData = (fileData, fileName, fileType) => {
+    const data = { name, shortName, category, subcategory, description, keywords, formNumber, fileData, fileName, fileType };
+    if (state.editDoc) {
+      updateDoc(state.editDoc.id, data);
+    } else {
+      addDoc(data);
+    }
+    state.showModal = false;
+    state.editDoc = null;
+    render();
+  };
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const base64 = ev.target.result.split(',')[1];
+      saveData(base64, file.name, file.type);
+    };
+    reader.onerror = () => {
+      showToast('ไม่สามารถอ่านไฟล์ได้ กรุณาลองใหม่', 'error');
+    };
+    reader.readAsDataURL(file);
+  } else {
+    const prev = state.editDoc;
+    saveData(prev ? prev.fileData : undefined, prev ? prev.fileName : undefined, prev ? prev.fileType : undefined);
+  }
+};
+
+// ==================== DELETE CONFIRM ====================
+window.confirmDelete = function(id, shortName) {
+  removeDoc(id);
+  state.deleteDoc = null;
+  render();
+};
 
 // ==================== INIT ====================
 window.sendChat = sendChat;
 window.handleDownload = handleDownload;
 window.performBrowseSearch = performBrowseSearch;
 window.performManageSearch = performManageSearch;
-window.handleFormSubmit = handleFormSubmit;
-window.confirmDelete = confirmDelete;
-window.handleFileSelect = handleFileSelect;
+window.documents = documents;
 
 loadFromFirebase();
 </script>
